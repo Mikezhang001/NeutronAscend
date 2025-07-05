@@ -1,16 +1,13 @@
-import time
+import argparse
 import numpy as np
-import math
-import random
-
 from concurrent.futures import ThreadPoolExecutor, as_completed
-import pymetis
+
 
 import mindspore as ms
 import mindspore.ops as ops
-from mindspore import Tensor, COOTensor
-from mindspore import context, profiler
+from mindspore import Tensor, COOTensor, context
 import os
+
 npu_id = 0
 context.set_context(device_target="CPU", device_id=npu_id)
 
@@ -399,11 +396,18 @@ def prepare_data(dataset_name, n_cuts, BLK_H, min_occurrences_row, min_occurrenc
     print(f"------------------Data preprocessing completed------------------")
     
 
-    
+def parse_args():
+    """
+    Parse command-line arguments for dataset configuration.
+    """
+    parser = argparse.ArgumentParser(description="Preprocess adjacency matrix for graph datasets.")
+    parser.add_argument("--dataset_name", type=str, required=True, 
+                        help="Dataset name (e.g., Cora, Citeseer, Pubmed, mycielskian18, reddit, products)")
+    return parser.parse_args()  
 
 if __name__ == "__main__":
-    #metis有问题
-    dataset_name = "Cora" #Cora、Citeseer、Pubmed、mycielskian18、reddit、products
+    args = parse_args()
+    dataset_name = args.dataset_name
     n_cuts = 8
     window_H = {"Cora": 81920, "Pubmed": 81920, "Citeseer": 81920, "products": 6400, "mycielskian18": 8192, "reddit": 8192}
     row = {"Cora": 0, "Pubmed": 5, "Citeseer": 0, "products": 200, "mycielskian18": 1530, "reddit": 600}
