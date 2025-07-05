@@ -15,7 +15,7 @@ static ge::graphStatus TilingFunc(gert::TilingContext* context)
   tiling.set_m(m);
   tiling.set_k(k);
   tiling.set_n(n);
-  context->SetBlockDim(20);
+  context->SetBlockDim(20);//最大aicore数目
 
   tiling.SaveToBuffer(context->GetRawTilingData()->GetData(), context->GetRawTilingData()->GetCapacity());
   context->GetRawTilingData()->SetDataSize(tiling.GetDataSize());
