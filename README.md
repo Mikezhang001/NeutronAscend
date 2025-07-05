@@ -1,182 +1,225 @@
-# 1.环境要求
-| 软件/硬件 | 版本/型号                        |
-|------|------------------------------------------------------------|
-| 服务器 | Atlas 800T A2 训练服务器<br>NPU型号: Ascend910B3<br>CPU架构: AArch64|
-| 固件 | Ascend HDK 25.0.RC1<br>软件包名称：Ascend-hdk-910b-npu-firmware_7.7.0.1.231.run |
-| 驱动 | Ascend HDK 25.0.RC1<br>软件包名称：Ascend-hdk-910b-npu-driver_25.0.rc1.1_linux-aarch64.run       |
-| mindspore | 2.3.1       |
-| mindspore_gl | 0.2       |
+# Table of Contents
+- [1. Environment Requirements](#1-environment-requirements)
+- [2. Environment Setup](#2-environment-setup)
+  - [2.1 Download](#21-download)
+  - [2.2 Installation](#22-installation)
+- [3. Operator Deployment](#3-operator-deployment)
+- [4. Getting Started](#4-getting-started)
+- [5. Acknowledgment](#5-acknowledgment)
 
-# 2.配置环境
+---
 
-## 2.1下载
+# 1. Environment Requirements
+| Software/Hardware | Version/Model                        |
+|-------------------|---------------------------------------|
+| **Server**        | Atlas 800T A2 Training Server<br>NPU Model: Ascend910B3<br>CPU Architecture: AArch64 |
+| **Firmware**      | Ascend HDK 25.0.RC1<br>Package Name: Ascend-hdk-910b-npu-firmware_7.7.0.1.231.run |
+| **Driver**        | Ascend HDK 25.0.RC1<br>Package Name: Ascend-hdk-910b-npu-driver_25.0.rc1.1_linux-aarch64.run |
+| **MindSpore**     | 2.3.1 |
+| **MindSpore_GL**  | 0.2 |
 
-### 2.1.1[固件和驱动](https://www.hiascend.com/hardware/firmware-drivers/community?product=4&model=26&cann=8.1.RC1.alpha002&driver=Ascend+HDK+25.0.RC1)
-![固件和驱动安装选项](./images/fireware.PNG)
+---
 
-### 2.1.2[CANN](https://www.hiascend.com/developer/download/community/result?module=cann&cann=8.1.RC1.alpha002)
-![CANN安装选项](./images/CANN.png)
+# 2. Environment Setup
 
-## 2.2安装
+## 2.1 Download
 
-### 2.2.1固件和驱动
-参考链接: [安装NPU驱动固件](https://support.huawei.com/enterprise/zh/doc/EDOC1100349380/ac9d2505)
-1. 以`root`用户登录服务器。
-2. 创建驱动运行用户`HwHiAiUser`（运行驱动进程的用户），安装驱动时无需指定运行用户，默认即为`HwHiAiUser`。
+### 2.1.1 [Firmware and Driver](https://www.hiascend.com/hardware/firmware-drivers/community?product=4&model=26&cann=8.1.RC1.alpha002&driver=Ascend+HDK+25.0.RC1)
+![Firmware and Driver Installation Options](./images/fireware.PNG)
 
-```
-groupadd HwHiAiUser
-useradd -g HwHiAiUser -d /home/HwHiAiUser -m HwHiAiUser -s /bin/bash
-```
+### 2.1.2 [CANN](https://www.hiascend.com/developer/download/community/result?module=cann&cann=8.1.RC1.alpha002)
+![CANN Installation Options](./images/CANN.png)
 
-3. 将驱动包和固件包上传到服务器任意目录如“/home”。
-4. 执行如下命令，增加驱动和固件包的可执行权限。
-```
-chmod +x Ascend-hdk-910b-npu-driver_25.0.rc1.1_linux-aarch64.run
-chmod +x Ascend-hdk-910b-npu-firmware_7.7.0.1.231.run
-```
-5. 执行以下命令，完成驱动固件安装，软件包默认安装路径为“/usr/local/Ascend”。
-- **安装驱动**  
-  执行以下命令，完成驱动安装。
-  ```
-  ./Ascend-hdk-910b-npu-driver_25.0.rc1.1_linux-aarch64.run --full --install-for-all
-  ```
-  - 若执行上述安装命令出现类似如下回显信息，请参见[驱动安装缺少依赖报错](https://support.huawei.com/enterprise/zh/doc/EDOC1100349380/3652fc47#ZH-CN_TOPIC_0000001782749677)解决。
-    ```
-    [ERROR]The list of missing tools: lspci,ifconfig,
-    ```
-  - 若执行上述安装命令出现类似如下回显信息，请参见[驱动安装过程中出现dkms编译失败](https://support.huawei.com/enterprise/zh/doc/EDOC1100349380/64a31720#ZH-CN_TOPIC_0000001784970501)报错解决。
-    ```
-    [ERROR]Dkms install failed, details in : var/log/ascend_seclog/ascend_install.log. 
-    [ERROR]Driver_ko_install failed, details in : /var/log/ascend_seclog/ascend_install.log.
-    ```
-  - 若系统出现如下关键回显信息，则表示驱动安装成功。
-    ```
-    Driver package installed successfully!
-    ```
+---
 
-- **安装固件**  
-  执行以下命令，完成固件安装。
-  ```
-  ./Ascend-hdk-910b-npu-firmware_7.7.0.1.231.run --full
-  ```
-  若系统出现如下关键回显信息，表示固件安装成功。
-  ```
-  Firmware package installed successfully! Reboot now or after driver installation for the installation/upgrade to take effect 
-  ```
-6. 执行 `reboot` 命令重启系统。(不是必须)  
-7. 执行 `npu-smi info` 查看驱动加载是否成功。
-> **注意：非 root 用户需要添加 HwHiAiUser**
-> ```
-> sudo usermod -aG HwHiAiUser username
-> ```
-### 2.2.2CANN
-参考链接: [安装CANN](https://zhuanlan.zhihu.com/p/719099792)
-1. 进入root用户（必须）
-```
-sudo su
-```
-2. 修改CANN包权限
-```
-chmod +x  Ascend-cann-kernels-910b_8.1.RC1.alpha002_linux-aarch64.run
-chmod +x  Ascend-cann-toolkit_8.1.RC1.alpha002_linux-aarch64.run
-```
-3. 安装CANN
-- 
-  如果老版本的CANN不需要，可以先删掉cann的安装目录
+## 2.2 Installation
 
-  ```
-  rm -rf /usr/local/Ascend/ascend-toolkit
-  ```
+### 2.2.1 Firmware and Driver
+Reference Link: [Install NPU Driver Firmware](https://support.huawei.com/enterprise/zh/doc/EDOC1100349380/ac9d2505)
 
-  然后安装cann-toolkit
-  ```
-  ./Ascend-cann-toolkit_8.1.RC1.alpha002_linux-aarch64.run --install 
-  ```
-  然后安装kenerls包
+1. **Log in to the server as the `root` user.**
+2. **Create a driver runtime user `HwHiAiUser` (the user running the driver process).**
+   ```bash
+   groupadd HwHiAiUser
+   useradd -g HwHiAiUser -d /home/HwHiAiUser -m HwHiAiUser -s /bin/bash
+   ```
+3. **Upload the driver package and firmware package to any directory on the server, such as `/home`.**
+4. **Add executable permissions to the driver and firmware packages.**
+   ```bash
+   chmod +x Ascend-hdk-910b-npu-driver_25.0.rc1.1_linux-aarch64.run
+   chmod +x Ascend-hdk-910b-npu-firmware_7.7.0.1.231.run
+   ```
+5. **Install the driver and firmware.**
+   - **Install Driver**
+     ```bash
+     ./Ascend-hdk-910b-npu-driver_25.0.rc1.1_linux-aarch64.run --full --install-for-all
+     ```
+     > If missing tools error occurs:
+     > ```
+     > [ERROR]The list of missing tools: lspci,ifconfig,
+     > ```
+     > Refer to [Driver Installation Missing Dependency Error](https://support.huawei.com/enterprise/zh/doc/EDOC1100349380/3652fc47#ZH-CN_TOPIC_0000001782749677).
 
-  ```
-  ./Ascend-cann-kernels-910b_8.1.RC1.alpha002_linux-aarch64.run
-  ```
+     > If DKMS compilation failure occurs:
+     > ```
+     > [ERROR]Dkms install failed, details in : var/log/ascend_seclog/ascend_install.log.
+     > ```
+     > Refer to [DKMS Compilation Failure During Driver Installation](https://support.huawei.com/enterprise/zh/doc/EDOC1100349380/64a31720#ZH-CN_TOPIC_0000001784970501).
 
-4. 确认kernels包是否成功安装(输出不为空且与型号一致)
+     > Successful installation message:
+     > ```
+     > Driver package installed successfully!
+     > ```
 
-```
-ls /usr/local/Ascend/ascend-toolkit/latest/opp/built-in/op_impl/ai_core/tbe/kernel/
-```
-    
-5. 配置环境变量
+   - **Install Firmware**
+     ```bash
+     ./Ascend-hdk-910b-npu-firmware_7.7.0.1.231.run --full
+     ```
+     > Successful installation message:
+     > ```
+     > Firmware package installed successfully! Reboot now or after driver installation for the installation/upgrade to take effect.
+     > ```
+6. **Restart the system (optional).**
+   ```bash
+   reboot
+   ```
+7. **Verify driver loading.**
+   ```bash
+   npu-smi info
+   ```
+   > **Note:** Non-root users need to add HwHiAiUser.
+   > ```bash
+   > sudo usermod -aG HwHiAiUser username
+   > ```
 
-```
-vim  ~/.bashrc
-# 然后在文件末尾添加  source /usr/local/Ascend/ascend-toolkit/set_env.sh
-```
+---
 
-### 2.2.3mindspore
-参考链接: [安装mindspore](https://zhuanlan.zhihu.com/p/719099792)
-1. 创建python环境
+### 2.2.2 CANN
+Reference Link: [Install CANN](https://zhuanlan.zhihu.com/p/719099792)
 
-```
-conda create -n mindspore python=3.9
-conda activate mindspore
-```
-2. 安装依赖
+1. **Switch to the root user.**
+   ```bash
+   sudo su
+   ```
+2. **Modify the permissions of the CANN package.**
+   ```bash
+   chmod +x Ascend-cann-kernels-910b_8.1.RC1.alpha002_linux-aarch64.run
+   chmod +x Ascend-cann-toolkit_8.1.RC1.alpha002_linux-aarch64.run
+   ```
+3. **Install CANN.**
+   - Remove old versions (if necessary):
+     ```bash
+     rm -rf /usr/local/Ascend/ascend-toolkit
+     ```
+   - Install the toolkit:
+     ```bash
+     ./Ascend-cann-toolkit_8.1.RC1.alpha002_linux-aarch64.run --install
+     ```
+   - Install the kernels package:
+     ```bash
+     ./Ascend-cann-kernels-910b_8.1.RC1.alpha002_linux-aarch64.run
+     ```
+4. **Verify installation.**
+   ```bash
+   ls /usr/local/Ascend/ascend-toolkit/latest/opp/built-in/op_impl/ai_core/tbe/kernel/
+   ```
+5. **Configure environment variables.**
+   ```bash
+   vim ~/.bashrc
+   # Add the following line:
+   source /usr/local/Ascend/ascend-toolkit/set_env.sh
+   ```
 
-```
-pip install sympy
-pip install numpy==1.26
-pip install /usr/local/Ascend/ascend-toolkit/latest/lib64/te-*-py3-none-any.whl
-pip install /usr/local/Ascend/ascend-toolkit/latest/lib64/hccl-*-py3-none-any.whl
-```
-3. 安装mindspore
-```
-pip install mindspore==2.3.1
-```
+---
 
-4. 验证mindspore是否安装成功
+### 2.2.3 MindSpore
+Reference Link: [Install MindSpore](https://zhuanlan.zhihu.com/p/719099792)
 
->```
->python -c "import mindspore;mindspore.set_context(device_target='Ascend');mindspore.run_check()"
->```
->打印如下即为成功：<br>
->The result of multiplication calculation is correct, MindSpore has been installed on platform [Ascend] successfully!
+1. **Create a Python environment.**
+   ```bash
+   conda create -n mindspore python=3.9
+   conda activate mindspore
+   ```
+2. **Install dependencies.**
+   ```bash
+   pip install sympy
+   pip install numpy==1.26
+   pip install /usr/local/Ascend/ascend-toolkit/latest/lib64/te-*-py3-none-any.whl
+   pip install /usr/local/Ascend/ascend-toolkit/latest/lib64/hccl-*-py3-none-any.whl
+   ```
+3. **Install MindSpore.**
+   ```bash
+   pip install mindspore==2.3.1
+   ```
+4. **Verify installation.**
+   ```bash
+   python -c "import mindspore;mindspore.set_context(device_target='Ascend');mindspore.run_check()"
+   ```
+   > Successful message:
+   > ```
+   > The result of multiplication calculation is correct, MindSpore has been installed on platform [Ascend] successfully!
+   > ```
 
-### 2.2.4[mindspore_gl](https://gitee.com/mindspore/graphlearning)
-1. 从代码仓下载源码
+---
 
-```
-git clone https://gitee.com/mindspore/graphlearning.git
-```
+### 2.2.4 MindSpore_GL
+Reference Link: [MindSpore Graph Learning](https://gitee.com/mindspore/graphlearning)
 
-2. 编译安装MindSpore Graph Learning
+1. **Download the source code.**
+   ```bash
+   git clone https://gitee.com/mindspore/graphlearning.git
+   ```
+2. **Compile and install.**
+   ```bash
+   cd graphlearning
+   bash build.sh
+   pip install ./output/mindspore_gl*.whl
+   ```
+3. **Verify installation.**
+   ```bash
+   python -c 'import mindspore_gl'
+   ```
+   > If no error "No module named 'mindspore_gl'" is reported, the installation is successful.
 
-```
-cd graphlearning
-bash build.sh
-pip install ./output/mindspore_gl*.whl
-```
-3. 验证是否成功安装
+---
 
->```
->python -c 'import mindspore_gl'
->```
->如果没有报错No module named 'mindspore_gl'，则说明安装成功。
+# 3. Operator Deployment
 
+1. **Compile the operator project.**
+   ```bash
+   sudo su root
+   conda activate mindspore
+   cd MmadCustom
+   ./build.sh
+   ```
+2. **Declare environment variables.**
+   ```bash
+   vim ~/.bashrc
+   export ASCEND_CUSTOM_OPP_PATH={build_out_path}build_out/_CPack_Packages/Linux/External/custom_opp_openEuler_aarch64.run/packages/vendors/customize:$ASCEND_CUSTOM_OPP_PATH
+   source ~/.bashrc
+   ```
+3. **Test normal invocation.**
+   ```bash
+   python ../test/test_mmad.py
+   ```
 
-# 3.算子部署
+---
 
-1. 算子工程编译
+# 4. Getting Started
 
-```
-sudo su root
-conda activate mindspore
-cd MmadCustom
-./build.sh
-```
+1. **Data Preprocessing.**
+   ```bash
+   cd ./data_preprocessing
+   python preprocess.py --dataset_name=Cora
+   ```
+2. **Start Training.**
+   ```bash
+   cd ..
+   python main.py --data-name=Cora --epochs=20 --num-layers=2 --num-hidden=256
+   ```
 
-2.声明环境变量
+---
 
-```
-export ASCEND_CUSTOM_OPP_PATH={build_out_path}build_out/_CPack_Packages/Linux/External/custom_opp_openEuler_aarch64.run/packages/vendors/customize:$ASCEND_CUSTOM_OPP_PATH
+# 5. Acknowledgment
 
-```
+This project is inspired by [MindSpore graphlearning](https://gitee.com/mindspore/graphlearning) in its design and implementation. We appreciate the open-source code and documentation provided.
