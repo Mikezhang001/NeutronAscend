@@ -38,7 +38,8 @@ class GCNNet(GNNCell):
                  split_row_filtered_coo_cols, adj_matrix, edgeToRow_ms_tensor, row_reindex, row_index,
                  dropout: float,
                  activation: ms.nn.Cell = None,
-                 num_layers: int = 2):
+                 num_layers: int = 2, 
+                 aicore_num = None):
         super().__init__()
 
         self.num_layers = num_layers
@@ -72,7 +73,7 @@ class GCNNet(GNNCell):
                                 row_reindex=row_reindex,
                                 row_index=row_index,
                                 activation=activation() if (i != num_layers - 1 and activation is not None) else None,
-                                dropout=dropout)
+                                dropout=dropout, aicore_num=aicore_num)
             self.layers.append(gcn_layer)
 
     def construct(self, x, in_deg, out_deg, g: Graph):

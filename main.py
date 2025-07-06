@@ -82,6 +82,8 @@ def main(train_args):
                                                "--enable_parallel_fusion=true ",
                                                device_id=train_args.device_id)
     
+    
+    
     # Timing dataset loading
     start_time = time.time()
     ds = GraphDataset(train_args.data_name)
@@ -92,6 +94,7 @@ def main(train_args):
         ms_profiler = Profiler(profiler_level=0, aicore_metrics=1, l2_cache=True, hbm_ddr=True, pcie=True, output_path="./profiler_output")
     # model
     start_time = time.time()
+    aicore = ms.Tensor(np.ones([train_args.aicore_num, 1]).astype(np.float16))#指定aicore数量
     net = GCNNet(data_feat_size=feature_size,
                  hidden_dim_size=train_args.num_hidden,
                  n_classes=ds.n_classes,
@@ -101,7 +104,7 @@ def main(train_args):
                  split_row_filtered_coo_cols=ds.split_row_filtered_coo_cols, adj_matrix=ds.adj_matrix, edgeToRow_ms_tensor=ds.edgeToRow_ms_tensor, 
                  row_reindex=ds.row_reindex, row_index=ds.row_index,
                  dropout=train_args.dropout,
-                 activation=ms.nn.ELU, num_layers=train_args.num_layers)
+                 activation=ms.nn.ELU, num_layers=train_args.num_layers, aicore_num= aicore)
     optimizer = nn.optim.Adam(net.trainable_params(), learning_rate=train_args.lr, weight_decay=train_args.weight_decay)
     loss = LossNet(net)
     train_net = nn.TrainOneStepCell(loss, optimizer)
@@ -151,6 +154,7 @@ if __name__ == "__main__":
     parser.add_argument("--weight-decay", type=float, default=5e-4, help="weight decay")
     parser.add_argument('--profile', type=bool, default=False, help="feature dimension")
     parser.add_argument('--device-id', type=int, default=0, help="running device_id")
+    parser.add_argument('--aicore-num', type=int, default=20, help="number of aicore, [1, 20]")
     args = parser.parse_args()
     print(args)
     main(args)

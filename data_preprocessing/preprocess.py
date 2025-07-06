@@ -7,6 +7,7 @@ import mindspore as ms
 import mindspore.ops as ops
 from mindspore import Tensor, COOTensor, context
 import os
+import time
 
 npu_id = 0
 context.set_context(device_target="CPU", device_id=npu_id)
@@ -301,6 +302,7 @@ def prepare_data(dataset_name, n_cuts, BLK_H, min_occurrences_row, min_occurrenc
         Files saved under `{dataset_path}/mmad/{dataset_name}` directory.
     """
 
+    prepare_start_time = time.time()
     npz = np.load(f"{dataset_path}/npz/{dataset_name}.npz")
     nodePointer_np = npz["adj_csr_indptr"].astype(np.int32)
     edgeList_np = npz["adj_csr_indices"].astype(np.int32)
@@ -310,6 +312,8 @@ def prepare_data(dataset_name, n_cuts, BLK_H, min_occurrences_row, min_occurrenc
 
     n_cuts = 8
     metis_index = np.arange(0, node_sum)
+    
+    read_coo_start_time = time.time()
     coo_rows, coo_cols = csr_to_coo(nodePointer_np, edgeList_np)
 
     print(f"Number of coo_rows: {len(coo_rows)}")
@@ -318,6 +322,7 @@ def prepare_data(dataset_name, n_cuts, BLK_H, min_occurrences_row, min_occurrenc
 
     print(f"------------------Adjacency matrix row partitioning started---------------")
 
+    split_row_start_time = time.time()
     (
         split_row_remaining_coo_rows,
         split_row_remaining_coo_cols,
@@ -333,6 +338,8 @@ def prepare_data(dataset_name, n_cuts, BLK_H, min_occurrences_row, min_occurrenc
 
     print(f"------------------Adjacency matrix column partitioning started---------------")
 
+    split_col_start_time = time.time()
+    
     (
         split_col_remaining_csr_indptr,
         split_col_remaining_coo_rows,
@@ -349,11 +356,15 @@ def prepare_data(dataset_name, n_cuts, BLK_H, min_occurrences_row, min_occurrenc
 
     print(f"------------------First part of data preparation completed---------------")
 
+    sort_split_col_filtered_start_time = time.time()
+    
     sorted_indices = np.lexsort((split_col_filtered_coo_cols, split_col_filtered_coo_rows))
     split_col_filtered_coo_rows = split_col_filtered_coo_rows[sorted_indices]
     split_col_filtered_coo_cols = split_col_filtered_coo_cols[sorted_indices]
     print(f"------------------Second part of data preparation completed---------------")
 
+    sort_split_row_filtered_start_time = time.time()
+    
     sorted_indices = np.lexsort((split_row_filtered_coo_cols, split_row_filtered_coo_rows))
     split_row_filtered_coo_rows = split_row_filtered_coo_rows[sorted_indices]
     split_row_filtered_coo_cols = split_row_filtered_coo_cols[sorted_indices]
@@ -368,6 +379,7 @@ def prepare_data(dataset_name, n_cuts, BLK_H, min_occurrences_row, min_occurrenc
 
     print(f"------------------Data saving started------------------")
 
+    save_data_start_time = time.time()
     row_reindex.astype(np.int32).tofile(f"{dataset_path}/mmad/{dataset_name}/row_reindex.bin")
     split_col_remaining_csr_indptr.astype(np.int32).tofile(f"{dataset_path}/mmad/{dataset_name}/split_col_remaining_csr_indptr.bin")
     split_col_remaining_coo_cols.astype(np.int32).tofile(f"{dataset_path}/mmad/{dataset_name}/split_col_remaining_coo_cols.bin")
@@ -379,10 +391,14 @@ def prepare_data(dataset_name, n_cuts, BLK_H, min_occurrences_row, min_occurrenc
 
     print(f"Length of split_col_remaining_csr_indptr: {len(split_col_remaining_csr_indptr)}")
 
+    prepare_adj_matrix_start_time = time.time()
+    
     adj_matrix, edgeToRow_ms_tensor = prepare_adj_matrix(
         split_col_remaining_csr_indptr, split_col_remaining_coo_cols, BLK_H, dataset_name, True
     )
 
+    save_matrix_start_time = time.time()
+    
     adj_matrix_np = []
     for i in range(len(adj_matrix)):
         adj_matrix_np.append(adj_matrix[i].asnumpy())
@@ -393,9 +409,21 @@ def prepare_data(dataset_name, n_cuts, BLK_H, min_occurrences_row, min_occurrenc
         edgeToRow_np.append(edgeToRow_ms_tensor[i].asnumpy())
     np.savez(f"{dataset_path}/mmad/{dataset_name}/edgeToRow_np.npz", *edgeToRow_np)
 
+    prepare_end_time = time.time()
     print(f"------------------Data preprocessing completed------------------")
     
-
+    print(f"Dataset name: {dataset_name}")
+    print(f"CSR data reading time: {(read_coo_start_time - prepare_start_time) * 1000:.1f}ms")
+    print(f"COO data reading time: {(split_row_start_time - read_coo_start_time) * 1000:.1f}ms")
+    print(f"Row splitting time: {(split_col_start_time - split_row_start_time) * 1000:.1f}ms")
+    print(f"Column splitting time: {(sort_split_col_filtered_start_time - split_col_start_time) * 1000:.1f}ms")
+    print(f"Column data reordering time after splitting: {(sort_split_row_filtered_start_time - sort_split_col_filtered_start_time) * 1000:.1f}ms")
+    print(f"Row data reordering time after splitting: {(save_data_start_time - sort_split_row_filtered_start_time) * 1000:.1f}ms")
+    print(f"Vector data storage time: {(prepare_adj_matrix_start_time - save_data_start_time) * 1000:.1f}ms")
+    print(f"SGT (including densification) time: {(save_matrix_start_time - prepare_adj_matrix_start_time) * 1000:.1f}ms")
+    print(f"Matrix type conversion and storage time: {(prepare_end_time - save_matrix_start_time) * 1000:.1f}ms")
+    print(f"Total time: {(prepare_end_time - prepare_start_time) * 1000:.1f}ms")
+    
 def parse_args():
     """
     Parse command-line arguments for dataset configuration.
@@ -431,6 +459,5 @@ if __name__ == "__main__":
     else:
         print(f"Dataset name '{dataset_name}' is temporarily not supported.")
 
-    
 
-    
+
