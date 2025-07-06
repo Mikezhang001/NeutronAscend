@@ -35,79 +35,28 @@ import mindspore.common.dtype as mstype
 
 
 class MmadCustomAclnnNet(Cell):
-    """
-    MmadCustomAclnnNet is a custom operator for matrix multiplication on Ascend devices.
-    It uses the `CustomRegOp` API to register the operator and define its behavior.
-
-    Attributes:
-        op (ops.Custom): The registered custom operator for matrix multiplication.
-    """
-
     def __init__(self):
-        """
-        Initializes the MmadCustomAclnnNet class and registers the custom operator.
-        """
         super(MmadCustomAclnnNet, self).__init__()
-        
-        # Register the custom operator using CustomRegOp
-        aclnn_ref_info = (
-            CustomRegOp("aclnnMmadCustom")  # Operator name
-            .input(0, "x", "required")  # First input tensor
-            .input(1, "y", "required")  # Second input tensor
-            .output(0, "z", "required")  # Output tensor
-            .dtype_format(
-                DataType.F16_Default, DataType.F16_Default, DataType.F32_Default
-            )  # Data type format: input tensors are FP16, output tensor is FP32
-            .target("Ascend")  # Target device: Ascend
-            .get_op_info()  # Get operator information
-        )
-        
-        # Define the custom operator
-        self.op = ops.Custom(
-            "aclnnMmadCustom",  # Operator name
-            lambda x_shape, y_shape: (x_shape[0], y_shape[1]),  # Output shape calculation
-            out_dtype=ms.float32,  # Output data type
-            func_type="aot",  # Function type: ahead-of-time compilation
-            bprop=None,  # Backpropagation function (not defined here)
-            reg_info=aclnn_ref_info,  # Registered operator information
-        )
-
-    def construct(self, x1, x2):
-        """
-        Forward computation for the custom operator.
-
-        Args:
-            x1 (Tensor): The first input tensor.
-            x2 (Tensor): The second input tensor.
-
-        Returns:
-            Tensor: The result of the matrix multiplication.
-        """
-        return self.op(x1, x2)
-
-    def bprop(self, x1, x2, out, dout):
-        """
-        Backpropagation computation for the custom operator.
-
-        Args:
-            x1 (Tensor): The first input tensor.
-            x2 (Tensor): The second input tensor.
-            out (Tensor): The output tensor from the forward computation.
-            dout (Tensor): The gradient of the output tensor.
-
-        Returns:
-            Tuple[Tensor, Tensor]: Gradients of the input tensors.
-        """
-        # Convert the gradient of the output tensor to FP16
+        aclnn_ref_info = CustomRegOp("aclnnMmadCustom") \
+            .input(0, "x", "required") \
+            .input(1, "y", "required") \
+            .input(2, "aicore_num", "required") \
+            .output(0, "z", "required") \
+            .dtype_format(DataType.F16_Default, DataType.F16_Default, DataType.F16_Default, DataType.F32_Default) \
+            .target("Ascend") \
+            .get_op_info()
+        self.op = ops.Custom("aclnnMmadCustom", lambda x_shape, y_shape, aicore_num_shape: (x_shape[0], y_shape[1]), out_dtype=ms.float32, func_type="aot", bprop=None,
+                             reg_info=aclnn_ref_info)
+    def construct(self, x, y, aicore_num):
+        res = self.op(x, y, aicore_num)
+        return res
+    def bprop(self, x, y, aicore_num, out, dout):
         dout_fp16 = dout.astype(ms.float16)
-        
-        # Compute the gradient for the first input tensor
-        dx1 = self.op(dout_fp16, x2.T).astype(ms.float16)
-        
-        # Compute the gradient for the second input tensor
-        dx2 = self.op(x1.T, dout_fp16).astype(ms.float16)
-        
-        return (dx1, dx2)
+        dx = self.op(dout_fp16, y.T, aicore_num).astype(ms.float16)
+        dy = self.op(x.T, dout_fp16, aicore_num).astype(ms.float16)
+        daicore_num = None
+        # print("Hello world two")
+        return (dx, dy, daicore_num)
 
 
 class GCNConv(GNNCell):
@@ -130,6 +79,7 @@ class GCNConv(GNNCell):
         row_index,
         activation=None,
         dropout=0.5,
+        aicore_num=None
     ):
         super().__init__()
         if in_feat_size <= 0 or not isinstance(in_feat_size, int):
@@ -191,6 +141,9 @@ class GCNConv(GNNCell):
         self.RESHAPE = ms.ops.Reshape()
         self.add_op = ms.ops.Add()
         self.concat_op = ms.ops.Concat(axis=0)
+        
+        ##指定核数
+        self.aicore_num = aicore_num
 
     # pylint: disable=arguments-differ
     def construct(self, x, in_deg, out_deg, g: Graph):
@@ -293,7 +246,7 @@ class GCNConv(GNNCell):
             padded_adj_matrix = adj_matrix_pad_op(self.adj_matrix[winId])
             padded_X_ms = X_ms_pad_op(X_ms)
 
-            tmp = self.matmul(padded_adj_matrix, padded_X_ms)  
+            tmp = self.matmul(padded_adj_matrix, padded_X_ms, self.aicore_num)  
 
             tmp = tmp[0 : (end - start), 0:embedding_dim].astype(
                 ms.float16
