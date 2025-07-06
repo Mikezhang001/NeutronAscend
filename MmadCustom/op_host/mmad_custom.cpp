@@ -11,12 +11,12 @@ static ge::graphStatus TilingFunc(gert::TilingContext* context)
   uint32_t m = static_cast<uint32_t>((context->GetInputTensor(0)->GetOriginShape())[0]);//获取输入张量X[0]
   uint32_t k = static_cast<uint32_t>((context->GetInputTensor(0)->GetOriginShape())[1]);//获取输入张量X[1]
   uint32_t n = static_cast<uint32_t>((context->GetInputTensor(1)->GetOriginShape())[1]);//获取输入张量Y[1]
-  
+  uint32_t aicore_num = static_cast<uint32_t>((context->GetInputTensor(2)->GetOriginShape())[0]);//二维tensor的一维指定aicore_num
   tiling.set_m(m);
   tiling.set_k(k);
   tiling.set_n(n);
-  context->SetBlockDim(20);
-
+  
+  context->SetBlockDim(aicore_num);
   tiling.SaveToBuffer(context->GetRawTilingData()->GetData(), context->GetRawTilingData()->GetCapacity());
   context->GetRawTilingData()->SetDataSize(tiling.GetDataSize());
 
@@ -24,19 +24,10 @@ static ge::graphStatus TilingFunc(gert::TilingContext* context)
   currentWorkspace[0] = 0;
 
   return ge::GRAPH_SUCCESS;
+
 }
 }
 
-
-// namespace ge {
-// static ge::graphStatus InferShape(gert::InferShapeContext* context)
-// {
-//     // const gert::Shape* x1_shape = context->GetInputShape(0);
-//     // gert::Shape* y_shape = context->GetOutputShape(0);
-//     // *y_shape = *x1_shape;
-//     return GRAPH_SUCCESS;
-// }
-// }
 
 namespace ge {
 static ge::graphStatus InferShape(gert::InferShapeContext* context)
@@ -59,6 +50,7 @@ static ge::graphStatus InferDataType(gert::InferDataTypeContext *context)
 }
 }
 
+
 namespace ops {
 class MmadCustom : public OpDef {
 public:
@@ -74,19 +66,23 @@ public:
             .DataType({ge::DT_FLOAT16})
             .Format({ge::FORMAT_ND})
             .UnknownShapeFormat({ge::FORMAT_ND});
+        this->Input("aicore_num")
+            .ParamType(REQUIRED)
+            .DataType({ge::DT_FLOAT16})
+            .Format({ge::FORMAT_ND})
+            .UnknownShapeFormat({ge::FORMAT_ND});
         this->Output("z")
             .ParamType(REQUIRED)
             .DataType({ge::DT_FLOAT})
             .Format({ge::FORMAT_ND})
             .UnknownShapeFormat({ge::FORMAT_ND});
 
-        // this->SetInferShape(ge::InferShape);
         this->SetInferShape(ge::InferShape).SetInferDataType(ge::InferDataType);
-        
-        
+
         this->AICore()
             .SetTiling(optiling::TilingFunc);
         this->AICore().AddConfig("ascend910b");
+
     }
 };
 

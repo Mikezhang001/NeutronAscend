@@ -165,6 +165,7 @@ def {}({}, kernel_name="{}", impl_mode=""):
     options.append("-I" + os.path.join(tikcpp_path, "tikcfw"))
     options.append("-I" + os.path.join(tikcpp_path, "tikcfw", "impl"))
     options.append("-I" + os.path.join(tikcpp_path, "tikcfw", "interface"))
+    options.append("-I" + os.path.join(tikcpp_path, "..", "ascendc", "act"))
     options.append("-I" + os.path.join(PYF_PATH, "..", "ascendc", "common"))
     if impl_mode == "high_performance":
         options.append("-DHIGH_PERFORMANCE=1")

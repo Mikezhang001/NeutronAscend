@@ -1,0 +1,50 @@
+[
+  {
+    "op": "MmadCustom",
+    "language":"cpp",
+    "input_desc": [
+      {
+        "name": "x",
+        "param_type": "required",
+        "format": [
+          "ND"
+        ],
+        "type": [
+          "fp16"
+        ]
+      },
+      {
+        "name": "y",
+        "param_type": "required",
+        "format": [
+          "ND"
+        ],
+        "type": [
+          "fp16"
+        ]
+      },
+      {
+        "name": "aicore_num",
+        "param_type": "required",
+        "format": [
+          "ND"
+        ],
+        "type": [
+          "fp16"
+        ]
+      }
+    ],
+    "output_desc": [
+      {
+        "name": "z",
+        "param_type": "required",
+        "format": [
+          "ND"
+        ],
+        "type": [
+          "float"
+        ]
+      }
+    ]
+  }
+]
