@@ -4,19 +4,20 @@
   - [2.1 Download](#21-download)
   - [2.2 Installation](#22-installation)
 - [3. Operator Deployment](#3-operator-deployment)
-- [4. Getting Started](#4-getting-started)
-- [5. Acknowledgment](#5-acknowledgment)
+- [4. Project Start](#4-project-start)
+- [5. Acknowledgments](#5-acknowledgments)
 
 ---
 
 # 1. Environment Requirements
-| Software/Hardware | Version/Model                        |
-|-------------------|---------------------------------------|
+| Software/Hardware | Version/Model |
+|-------------------|---------------|
 | **Server**        | Atlas 800T A2 Training Server<br>NPU Model: Ascend910B3<br>CPU Architecture: AArch64 |
 | **Firmware**      | Ascend HDK 25.0.RC1<br>Package Name: Ascend-hdk-910b-npu-firmware_7.7.0.1.231.run |
 | **Driver**        | Ascend HDK 25.0.RC1<br>Package Name: Ascend-hdk-910b-npu-driver_25.0.rc1.1_linux-aarch64.run |
 | **MindSpore**     | 2.3.1 |
 | **MindSpore_GL**  | 0.2 |
+| **MindInsight**   | 2.3.1 |
 
 ---
 
@@ -37,20 +38,20 @@
 ### 2.2.1 Firmware and Driver
 Reference Link: [Install NPU Driver Firmware](https://support.huawei.com/enterprise/zh/doc/EDOC1100349380/ac9d2505)
 
-1. **Log in to the server as the `root` user.**
-2. **Create a driver runtime user `HwHiAiUser` (the user running the driver process).**
+1. **Log in to the server as `root` user.**
+2. **Create a driver runtime user `HwHiAiUser` (user for running driver processes).**
    ```bash
    groupadd HwHiAiUser
    useradd -g HwHiAiUser -d /home/HwHiAiUser -m HwHiAiUser -s /bin/bash
    ```
-3. **Upload the driver package and firmware package to any directory on the server, such as `/home`.**
+3. **Upload the driver and firmware packages to any directory on the server, e.g., `/home`.**
 4. **Add executable permissions to the driver and firmware packages.**
    ```bash
    chmod +x Ascend-hdk-910b-npu-driver_25.0.rc1.1_linux-aarch64.run
    chmod +x Ascend-hdk-910b-npu-firmware_7.7.0.1.231.run
    ```
 5. **Install the driver and firmware.**
-   - **Install Driver**
+   - **Install the driver**
      ```bash
      ./Ascend-hdk-910b-npu-driver_25.0.rc1.1_linux-aarch64.run --full --install-for-all
      ```
@@ -60,7 +61,7 @@ Reference Link: [Install NPU Driver Firmware](https://support.huawei.com/enterpr
      > ```
      > Refer to [Driver Installation Missing Dependency Error](https://support.huawei.com/enterprise/zh/doc/EDOC1100349380/3652fc47#ZH-CN_TOPIC_0000001782749677).
 
-     > If DKMS compilation failure occurs:
+     > If DKMS compilation fails:
      > ```
      > [ERROR]Dkms install failed, details in : var/log/ascend_seclog/ascend_install.log.
      > ```
@@ -71,7 +72,7 @@ Reference Link: [Install NPU Driver Firmware](https://support.huawei.com/enterpr
      > Driver package installed successfully!
      > ```
 
-   - **Install Firmware**
+   - **Install the firmware**
      ```bash
      ./Ascend-hdk-910b-npu-firmware_7.7.0.1.231.run --full
      ```
@@ -87,7 +88,7 @@ Reference Link: [Install NPU Driver Firmware](https://support.huawei.com/enterpr
    ```bash
    npu-smi info
    ```
-   > **Note:** Non-root users need to add HwHiAiUser.
+   > **Note: Non-root users need to add HwHiAiUser.**
    > ```bash
    > sudo usermod -aG HwHiAiUser username
    > ```
@@ -97,17 +98,17 @@ Reference Link: [Install NPU Driver Firmware](https://support.huawei.com/enterpr
 ### 2.2.2 CANN
 Reference Link: [Install CANN](https://zhuanlan.zhihu.com/p/719099792)
 
-1. **Switch to the root user.**
+1. **Switch to root user.**
    ```bash
    sudo su
    ```
-2. **Modify the permissions of the CANN package.**
+2. **Modify CANN package permissions.**
    ```bash
    chmod +x Ascend-cann-kernels-910b_8.1.RC1.alpha002_linux-aarch64.run
    chmod +x Ascend-cann-toolkit_8.1.RC1.alpha002_linux-aarch64.run
    ```
 3. **Install CANN.**
-   - Remove old versions (if necessary):
+   - Remove old versions (if needed):
      ```bash
      rm -rf /usr/local/Ascend/ascend-toolkit
      ```
@@ -115,7 +116,7 @@ Reference Link: [Install CANN](https://zhuanlan.zhihu.com/p/719099792)
      ```bash
      ./Ascend-cann-toolkit_8.1.RC1.alpha002_linux-aarch64.run --install
      ```
-   - Install the kernels package:
+   - Install the kernel package:
      ```bash
      ./Ascend-cann-kernels-910b_8.1.RC1.alpha002_linux-aarch64.run
      ```
@@ -126,7 +127,7 @@ Reference Link: [Install CANN](https://zhuanlan.zhihu.com/p/719099792)
 5. **Configure environment variables.**
    ```bash
    vim ~/.bashrc
-   # Add the following line:
+   # Add the following:
    source /usr/local/Ascend/ascend-toolkit/set_env.sh
    ```
 
@@ -147,15 +148,16 @@ Reference Link: [Install MindSpore](https://zhuanlan.zhihu.com/p/719099792)
    pip install /usr/local/Ascend/ascend-toolkit/latest/lib64/te-*-py3-none-any.whl
    pip install /usr/local/Ascend/ascend-toolkit/latest/lib64/hccl-*-py3-none-any.whl
    ```
-3. **Install MindSpore.**
+3. **Install MindSpore and MindInsight.**
    ```bash
    pip install mindspore==2.3.1
+   pip install mindinsight==2.3.1
    ```
 4. **Verify installation.**
    ```bash
    python -c "import mindspore;mindspore.set_context(device_target='Ascend');mindspore.run_check()"
    ```
-   > Successful message:
+   > Successful installation message:
    > ```
    > The result of multiplication calculation is correct, MindSpore has been installed on platform [Ascend] successfully!
    > ```
@@ -179,7 +181,7 @@ Reference Link: [MindSpore Graph Learning](https://gitee.com/mindspore/graphlear
    ```bash
    python -c 'import mindspore_gl'
    ```
-   > If no error "No module named 'mindspore_gl'" is reported, the installation is successful.
+   > If no error "No module named 'mindspore_gl'" occurs, the installation is successful.
 
 ---
 
@@ -205,21 +207,73 @@ Reference Link: [MindSpore Graph Learning](https://gitee.com/mindspore/graphlear
 
 ---
 
-# 4. Getting Started
+# 4. Project Start
 
-1. **Data Preprocessing.**
+## 4.1. NeutronAscend
+1. **Data preprocessing.**
    ```bash
    cd ./data_preprocessing
    python preprocess.py --dataset_name=Cora
    ```
-2. **Start Training.**
+2. **Start training.**
    ```bash
    cd ..
-   python main.py --data-name=Cora --epochs=20 --num-layers=2 --num-hidden=256
+   python main.py --data-name=Cora --epochs=20 --num-layers=2 --num-hidden=256 --aicore-num=20 
    ```
+## 4.2 Baseline
+
+### 4.2.1 MindsporeGL-graph
+   **Start training.**
+   ```bash
+   cd ./baseline/graphlearning_batch/examples
+   python vc_gcn_datanet.py   --data-name=Cora --epochs=20 --num-layers=2 --num-hidden=256 --fuse
+   ```
+### 4.2.2 MindsporeGL-pynative
+   **Start training.**
+   ```bash
+   cd ./baseline/graphlearning_batch/examples
+   python vc_gcn_datanet.py   --data-name=Cora --epochs=20 --num-layers=2 --num-hidden=256  
+   ```
+### 4.2.3 graphlearning_TP
+   
+1. **Compile the operator project.**
+   ```bash
+   cd ./baseline/graphlearning_TP/MmadCustomTP
+   ./build.sh
+   ```
+2. **Declare environment variables.**
+   ```bash
+   vim ~/.bashrc
+   export ASCEND_CUSTOM_OPP_PATH={build_out_path}build_out/_CPack_Packages/Linux/External/custom_opp_openEuler_aarch64.run/packages/vendors/customize:$ASCEND_CUSTOM_OPP_PATH
+   source ~/.bashrc
+   ```
+3. **Data preprocessing.**
+   ```bash
+   cd ../../../data_preprocessing
+   python preprocess.py --dataset_name=Cora
+   ```
+4. **Start training.**
+   ```bash
+   cd ../baseline/graphlearning_TP/examples
+   python vc_gcn_datanet.py  --data-name=Cora --epochs=20 --num-layers=2 --num-hidden=256 
+   ```
+
+## 4.3 Data Collection (Example: MindsporeGL-graph)
+1. **Memory and Power Consumption** (GPU see `data_preprocessing/ntspowerdraw.py`)
+```
+# Collect during training
+python vc_gcn_datanet.py   --data-name=Cora --epochs=20 --num-layers=2 --num-hidden=256 --fuse
+stdbuf -oL npu-smi info watch -i {device-id} | tee train.log #device-id = npu_id
+```
+2. **Operator Time Proportion**
+```
+python vc_gcn_datanet.py   --data-name=Cora --epochs=20 --num-layers=2 --num-hidden=256 --fuse --profile #Add --profile parameter
+mindinsight start
+## Open the prof folder in the browser to view
+```
 
 ---
 
-# 5. Acknowledgment
+# 5. Acknowledgments
 
-This project is inspired by [MindSpore graphlearning](https://gitee.com/mindspore/graphlearning) in its design and implementation. We appreciate the open-source code and documentation provided.
+This project references the design and implementation of [MindSpore graphlearning](https://gitee.com/mindspore/graphlearning). Thanks for providing open-source code and documentation support.

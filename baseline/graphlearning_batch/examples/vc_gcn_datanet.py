@@ -81,12 +81,13 @@ def main(train_args):
                             graph_kernel_flags="--enable_recompute_fusion=false "
                                                "--enable_parallel_fusion=true ", device_id=train_args.device_id)
     else:
+        
         context.set_context(device_target=train_args.device, mode=context.PYNATIVE_MODE, device_id=train_args.device_id)
     # dataloader
-    ds = GraphDataset(train_args.data_path)
+    ds = GraphDataset(train_args.data_name)
     feature_size = ds.x.shape[1]
     if train_args.profile:
-        ms_profiler = Profiler(subgraph="ALL", is_detail=True, is_show_op_path=False, output_path="./baseline_pynative_mycielskian18_layer3_20")
+        ms_profiler = Profiler(subgraph="ALL", is_detail=True, is_show_op_path=False, output_path="./prof_result")
     # model
     net = GCNNet(data_feat_size=feature_size,
                  hidden_dim_size=train_args.num_hidden,
@@ -120,7 +121,7 @@ def main(train_args):
             count = np.equal(predict, label)
             print('Epoch time:{} ms Train loss {} Test acc:{}'.format(dur * 1000, train_loss,
                                                                       np.sum(count) / label.shape[0]))
-    print("Model:{} Dataset:{} Avg epoch time:{}".format("GCN", train_args.data_path,
+    print("Model:{} Dataset:{} Avg epoch time:{}".format("GCN", train_args.data_name,
                                                          total * 1000 / (train_args.epochs - warm_up)))
     if train_args.profile:
         ms_profiler.analyse()
@@ -128,7 +129,7 @@ def main(train_args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="GAT")
-    parser.add_argument("--data-path", type=str, default="Cora",
+    parser.add_argument("--data-name", type=str, default="Cora",
                         help="path to dataloader")
     parser.add_argument("--device", type=str, default="Ascend", help="which device to use")
     parser.add_argument("--dropout", type=float, default=0.5, help="drop out rate")
@@ -137,8 +138,8 @@ if __name__ == "__main__":
     parser.add_argument("--num-hidden", type=int, default=16, help="number of hidden units")
     parser.add_argument("--lr", type=float, default=1e-2, help="learning rate")
     parser.add_argument("--weight-decay", type=float, default=5e-4, help="weight decay")
-    parser.add_argument('--profile', type=bool, default=False, help="feature dimension")
-    parser.add_argument('--fuse', type=bool, default=True, help="enable fusion")
+    parser.add_argument('--profile', action='store_true', help="Enable profiling")
+    parser.add_argument('--fuse', action='store_true', help="enable fusion")
     parser.add_argument('--device-id', type=int, default=2, help="running device_id")
     args = parser.parse_args()
     print(args)

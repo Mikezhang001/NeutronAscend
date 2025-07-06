@@ -85,12 +85,13 @@ def main(train_args):
 
     # Timing dataset loading
     start_time = time.time()
-    ds = GraphDataset(train_args.data_path)
+    ds = GraphDataset(train_args.data_name)
     print(f"Dataset loading time: {time.time() - start_time:.4f} seconds")
 
     feature_size = ds.x.shape[1]
+    print(f"值为{train_args.profile}")
     if train_args.profile:
-        ms_profiler = Profiler(profiler_level=0, aicore_metrics=1, l2_cache=True, hbm_ddr=True, pcie=True, output_path="./TP_mycielskian18_layer3_20")
+        ms_profiler = Profiler(profiler_level=0, aicore_metrics=1, l2_cache=True, hbm_ddr=True, pcie=True, output_path="./prof_result")
     # model
     start_time = time.time()
     net = GCNNet(data_feat_size=feature_size,
@@ -133,7 +134,7 @@ def main(train_args):
             print('Epoch time:{} ms Train loss {} Test acc:{}'.format(dur * 1000, train_loss,
                                                                       np.sum(count) / label.shape[0]))
         # print('Epoch time:{} ms Train loss {}'.format(dur * 1000, train_loss))
-    print("Model:{} Dataset:{} Avg epoch time:{}".format("GCN", train_args.data_path,
+    print("Model:{} Dataset:{} Avg epoch time:{}".format("GCN", train_args.data_name,
                                                          total * 1000 / (train_args.epochs - warm_up)))
     if train_args.profile:
         ms_profiler.analyse()
@@ -141,7 +142,7 @@ def main(train_args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="GAT")
-    parser.add_argument("--data-path", type=str, default='Cora',
+    parser.add_argument("--data-name", type=str, default='Cora',
                         help="path to dataloader")
     parser.add_argument("--device", type=str, default="Ascend", help="which device to use")
     parser.add_argument("--dropout", type=float, default=0.5, help="drop out rate")
@@ -150,7 +151,7 @@ if __name__ == "__main__":
     parser.add_argument("--num-hidden", type=int, default=16, help="number of hidden units")
     parser.add_argument("--lr", type=float, default=1e-2, help="learning rate")
     parser.add_argument("--weight-decay", type=float, default=5e-4, help="weight decay")
-    parser.add_argument('--profile', type=bool, default=False, help="feature dimension")
+    parser.add_argument('--profile', action='store_true', help="Enable profiling")
     parser.add_argument('--device-id', type=int, default=2, help="running device_id")
     args = parser.parse_args()
     print(args)

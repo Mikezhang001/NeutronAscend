@@ -152,7 +152,7 @@ if __name__ == "__main__":
     parser.add_argument("--num-hidden", type=int, default=256, help="number of hidden units")
     parser.add_argument("--lr", type=float, default=1e-2, help="learning rate")
     parser.add_argument("--weight-decay", type=float, default=5e-4, help="weight decay")
-    parser.add_argument('--profile', type=bool, default=False, help="feature dimension")
+    parser.add_argument('--profile', action='store_true', help="Enable profiling")
     parser.add_argument('--device-id', type=int, default=0, help="running device_id")
     parser.add_argument('--aicore-num', type=int, default=20, help="number of aicore, [1, 20]")
     args = parser.parse_args()
