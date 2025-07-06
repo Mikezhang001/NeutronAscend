@@ -17,7 +17,7 @@
 | **驱动**   | Ascend HDK 25.0.RC1<br>软件包名称：Ascend-hdk-910b-npu-driver_25.0.rc1.1_linux-aarch64.run |
 | **MindSpore** | 2.3.1 |
 | **MindSpore_GL** | 0.2 |
-
+| **MindInsight** | 2.3.1 |
 ---
 
 # 2. 配置环境
@@ -147,9 +147,10 @@
    pip install /usr/local/Ascend/ascend-toolkit/latest/lib64/te-*-py3-none-any.whl
    pip install /usr/local/Ascend/ascend-toolkit/latest/lib64/hccl-*-py3-none-any.whl
    ```
-3. **安装MindSpore。**
+3. **安装MindSpore和MindInsight。**
    ```bash
    pip install mindspore==2.3.1
+   pip install mindinsight==2.3.1
    ```
 4. **验证安装。**
    ```bash
@@ -207,6 +208,7 @@
 
 # 4. 项目开始
 
+## 4.1. NeutronAscend
 1. **数据预处理。**
    ```bash
    cd ./data_preprocessing
@@ -215,8 +217,58 @@
 2. **开始训练。**
    ```bash
    cd ..
-   python main.py --data-name=Cora --epochs=20 --num-layers=2 --num-hidden=256
+   python main.py --data-name=Cora --epochs=20 --num-layers=2 --num-hidden=256 --aicore-num=20 
    ```
+## 4.2 baseline
+
+### 4.2.1 MindsporeGL-graph
+   **开始训练。**
+   ```bash
+   cd ./baseline/graphlearning_batch/examples
+   python vc_gcn_datanet.py   --data-name=Cora --epochs=20 --num-layers=2 --num-hidden=256 --fuse
+   ```
+### 4.2.2 MindsporeGL-pynative
+   **开始训练。**
+   ```bash
+   cd ./baseline/graphlearning_batch/examples
+   python vc_gcn_datanet.py   --data-name=Cora --epochs=20 --num-layers=2 --num-hidden=256  
+   ```
+### 4.2.3 graphlearning_TP
+   
+1. **编译算子工程。**
+   ```bash
+   cd ./baseline/graphlearning_TP/MmadCustomTP
+   ./build.sh
+   ```
+2. **声明环境变量。**
+   ```bash
+   vim ~/.bashrc
+   export ASCEND_CUSTOM_OPP_PATH={build_out_path}build_out/_CPack_Packages/Linux/External/custom_opp_openEuler_aarch64.run/packages/vendors/customize:$ASCEND_CUSTOM_OPP_PATH
+   source ~/.bashrc
+3. **数据预处理。**
+   ```bash
+   cd ../../../data_preprocessing
+   python preprocess.py --dataset_name=Cora
+   ```
+4. **开始训练。**
+   ```bash
+   cd ../baseline/graphlearning_TP/examples
+   python vc_gcn_datanet.py  --data-name=Cora --epochs=20 --num-layers=2 --num-hidden=256 
+   ```
+
+## 4.3 数据采集(以MindsporeGL-graph举例)
+1. **显存和能耗**(GPU见`data_preprocessing/ntspowerdraw.py`)
+```
+#在执行训练时收集
+python vc_gcn_datanet.py   --data-name=Cora --epochs=20 --num-layers=2 --num-hidden=256 --fuse
+stdbuf -oL npu-smi info watch -i {device-id} | tee train.log #device-id = npu_id
+```
+2. **算子时间占比**
+```
+python vc_gcn_datanet.py   --data-name=Cora --epochs=20 --num-layers=2 --num-hidden=256 --fuse --profile #填上--profile参数即可
+mindinsight start
+##浏览器页面打开prof文件夹即可查看
+```
 
 ---
 
