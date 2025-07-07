@@ -224,13 +224,13 @@
 ### 4.2.1 MindsporeGL-graph
    **开始训练。**
    ```bash
-   cd ./baseline/graphlearning_batch/examples
+   cd ./baseline/graphlearning/examples
    python vc_gcn_datanet.py   --data-name=Cora --epochs=20 --num-layers=2 --num-hidden=256 --fuse
    ```
 ### 4.2.2 MindsporeGL-pynative
    **开始训练。**
    ```bash
-   cd ./baseline/graphlearning_batch/examples
+   cd ./baseline/graphlearning/examples
    python vc_gcn_datanet.py   --data-name=Cora --epochs=20 --num-layers=2 --num-hidden=256  
    ```
 ### 4.2.3 graphlearning_TP
@@ -253,23 +253,179 @@
 4. **开始训练。**
    ```bash
    cd ../baseline/graphlearning_TP/examples
-   python vc_gcn_datanet.py  --data-name=Cora --epochs=20 --num-layers=2 --num-hidden=256 
+   python vc_gcn_datanet.py  --data-name=Cora --epochs=10 --num-layers=2 --num-hidden=256 
    ```
 
-## 4.3 数据采集(以MindsporeGL-graph举例)
-1. **显存和能耗**(GPU见`data_preprocessing/ntspowerdraw.py`)
-```
-#在执行训练时收集
-python vc_gcn_datanet.py   --data-name=Cora --epochs=20 --num-layers=2 --num-hidden=256 --fuse
-stdbuf -oL npu-smi info watch -i {device-id} | tee train.log #device-id = npu_id
-```
-2. **算子时间占比**
-```
-python vc_gcn_datanet.py   --data-name=Cora --epochs=20 --num-layers=2 --num-hidden=256 --fuse --profile #填上--profile参数即可
-mindinsight start
-##浏览器页面打开prof文件夹即可查看
-```
+## 4.3 性能对比实验(以MindsporeGL-pynative举例)
+1. **层数**
+   - **两层**
+   ```
+   python vc_gcn_datanet.py  --data-name=products --epochs=10 --num-layers=2 --num-hidden=256 
+   ```
+  
+   ```
+   dataset contains  2449029 nodes 61859140 edges
+   train_loss=12.072141
+   Epoch time:8450.45781135559 ms Train loss 12.072141 Test acc:0.34154537703149124
+   train_loss=3.5697818
+   Epoch time:1165.1198863983154 ms Train loss 3.5697818 Test acc:0.4221629386229486
+   train_loss=2.2543364
+   Epoch time:1165.4982566833496 ms Train loss 2.2543364 Test acc:0.5003282738938435
+   train_loss=1.9283148
+   Epoch time:1165.1597023010254 ms Train loss 1.9283148 Test acc:0.5108556313319245
+   train_loss=1.828576
+   Epoch time:1165.1110649108887 ms Train loss 1.828576 Test acc:0.5162101332480228
+   train_loss=1.7723752
+   Epoch time:1166.0611629486084 ms Train loss 1.7723752 Test acc:0.4731143003157123
+   train_loss=1.6992369
+   Epoch time:1163.6111736297607 ms Train loss 1.6992369 Test acc:0.4751892262902881
+   train_loss=1.6790669
+   Epoch time:1166.7473316192627 ms Train loss 1.6790669 Test acc:0.4788601101355525
+   train_loss=1.6669618
+   Epoch time:1165.6548976898193 ms Train loss 1.6669618 Test acc:0.4798912471290155
+   train_loss=1.6325996
+   Epoch time:1165.1995182037354 ms Train loss 1.6325996 Test acc:0.47932868553529884
+   Model:GCN Dataset:products Avg epoch time:1165.3635501861572
+   ```
+   - **三层**
+   ```
+   python vc_gcn_datanet.py  --data-name=products --epochs=10 --num-layers=3 --num-hidden=256
+   ```
 
+   ```
+   dataset contains  2449029 nodes 61859140 edges
+   .train_loss=8.435297
+   Epoch time:11191.599369049072 ms Train loss 8.435297 Test acc:0.4329031205675682
+   train_loss=3.3900096
+   Epoch time:3582.9479694366455 ms Train loss 3.3900096 Test acc:0.3537925010765486
+   train_loss=4.872701
+   Epoch time:3576.2083530426025 ms Train loss 4.872701 Test acc:0.39171954519719254
+   train_loss=3.7903616
+   Epoch time:3602.1695137023926 ms Train loss 3.7903616 Test acc:0.4370005571393133
+   train_loss=3.3421147
+   Epoch time:3618.5998916625977 ms Train loss 3.3421147 Test acc:0.4656152864929639
+   train_loss=2.7813191
+   Epoch time:3587.216377258301 ms Train loss 2.7813191 Test acc:0.4309257956405769
+   train_loss=2.7379599
+   Epoch time:3605.0972938537598 ms Train loss 2.7379599 Test acc:0.4292055771768987
+   train_loss=2.6575003
+   Epoch time:3586.103677749634 ms Train loss 2.6575003 Test acc:0.41401686600325066
+   train_loss=2.4747195
+   Epoch time:3604.220390319824 ms Train loss 2.4747195 Test acc:0.39548215595291836
+   train_loss=2.2983172
+   Epoch time:3607.9840660095215 ms Train loss 2.2983172 Test acc:0.384010869864818
+   Model:GCN Dataset:products Avg epoch time:3601.6273157937185
+   ```
+
+2. **隐藏层维度**
+   - **16**
+   ```
+   python vc_gcn_datanet.py  --data-name=products --epochs=10 --num-layers=2 --num-hidden=16 
+   ```
+
+   ```
+   dataset contains  2449029 nodes 61859140 edges
+   train_loss=9.642098
+   Epoch time:7039.752960205078 ms Train loss 9.642098 Test acc:0.10264557580325437
+   train_loss=7.8305697
+   Epoch time:736.5090847015381 ms Train loss 7.8305697 Test acc:0.08275665121768604
+   train_loss=6.350828
+   Epoch time:735.252857208252 ms Train loss 6.350828 Test acc:0.13386390347256394
+   train_loss=5.1508837
+   Epoch time:735.4328632354736 ms Train loss 5.1508837 Test acc:0.19797107303766542
+   train_loss=4.2162824
+   Epoch time:736.8307113647461 ms Train loss 4.2162824 Test acc:0.2548783579165972
+   train_loss=3.5348632
+   Epoch time:735.3265285491943 ms Train loss 3.5348632 Test acc:0.2999759160377951
+   train_loss=3.0366533
+   Epoch time:735.6846332550049 ms Train loss 3.0366533 Test acc:0.33167592295120263
+   train_loss=2.7179286
+   Epoch time:735.2287769317627 ms Train loss 2.7179286 Test acc:0.3529909072875901
+   train_loss=2.4348474
+   Epoch time:736.16623878479 ms Train loss 2.4348474 Test acc:0.36806891356930194
+   train_loss=2.2762816
+   Epoch time:735.344409942627 ms Train loss 2.2762816 Test acc:0.3787788211149022
+   Model:GCN Dataset:products Avg epoch time:735.7163088662284
+   ```
+
+
+   - **256**
+   ```
+   python vc_gcn_datanet.py  --data-name=products --epochs=10 --num-layers=2 --num-hidden=256 
+   ``` 
+   ```
+   dataset contains  2449029 nodes 61859140 edges
+   train_loss=12.072141
+   Epoch time:8450.45781135559 ms Train loss 12.072141 Test acc:0.34154537703149124
+   train_loss=3.5697818
+   Epoch time:1165.1198863983154 ms Train loss 3.5697818 Test acc:0.4221629386229486
+   train_loss=2.2543364
+   Epoch time:1165.4982566833496 ms Train loss 2.2543364 Test acc:0.5003282738938435
+   train_loss=1.9283148
+   Epoch time:1165.1597023010254 ms Train loss 1.9283148 Test acc:0.5108556313319245
+   train_loss=1.828576
+   Epoch time:1165.1110649108887 ms Train loss 1.828576 Test acc:0.5162101332480228
+   train_loss=1.7723752
+   Epoch time:1166.0611629486084 ms Train loss 1.7723752 Test acc:0.4731143003157123
+   train_loss=1.6992369
+   Epoch time:1163.6111736297607 ms Train loss 1.6992369 Test acc:0.4751892262902881
+   train_loss=1.6790669
+   Epoch time:1166.7473316192627 ms Train loss 1.6790669 Test acc:0.4788601101355525
+   train_loss=1.6669618
+   Epoch time:1165.6548976898193 ms Train loss 1.6669618 Test acc:0.4798912471290155
+   train_loss=1.6325996
+   Epoch time:1165.1995182037354 ms Train loss 1.6325996 Test acc:0.47932868553529884
+   Model:GCN Dataset:products Avg epoch time:1165.3635501861572
+   ```
+
+3. **显存和能耗**(GPU见`data_preprocessing/ntspowerdraw.py`)
+   ```
+   #在执行训练时收集
+   python vc_gcn_datanet.py   --data-name=Cora --epochs=100 --num-layers=2 --num-hidden=256
+   stdbuf -oL npu-smi info watch -i {device-id} | tee train.log #device-id = npu_id
+   ```
+
+   ```
+   NpuID(Idx)  ChipId(Idx) Pwr(W)      Temp(C)     AI Core(%)  AI Cpu(%)   Ctrl Cpu(%) Memory(%)   Memory BW(%)
+   2           0           90.1        34          0           0           2           5           0           
+   2           0           90.2        34          0           0           0           5           0           
+   2           0           90.3        34          0           0           0           5           0           
+   2           0           90.2        34          0           0           1           5           0           
+   2           0           90.2        34          0           0           2           5           0           
+   2           0           90.2        34          0           0           1           5           0           
+   2           0           90.2        34          0           0           1           5           0           
+   2           0           90.2        34          0           0           0           5           0           
+   2           0           90.2        34          0           0           1           5           0           
+   2           0           90.2        34          0           0           3           5           0           
+   2           0           97.6        34          0           0           16          5           0           
+   2           0           90.7        34          0           0           0           5           0           
+   2           0           90.1        34          0           0           0           5           0           
+   2           0           90.1        34          0           0           2           5           0           
+   2           0           98.1        34          0           0           6           5           0           
+   2           0           98.1        34          0           0           2           5           0           
+   2           0           98.0        34          0           0           1           5           0           
+   2           0           98.1        34          0           0           3           5           0           
+   2           0           98.2        34          0           0           4           5           0           
+   2           0           98.3        34          0           0           2           5           0           
+   2           0           100.1       34          0           0           1           5           0           
+   2           0           99.4        35          0           0           0           5           0           
+   2           0           98.2        34          0           0           2           5           0           
+   2           0           98.2        34          0           0           0           5           0           
+   2           0           90.2        34          0           0           4           5           0           
+   2           0           93.2        34          0           0           0           5           0           
+   2           0           93.0        34          0           0           3           5           0           
+   2           0           90.2        34          0           0           11          5           0           
+   2           0           90.2        34          0           0           3           5           0           
+   2           0           90.2        34          0           0           3           5           0           
+   2           0           90.2        34          0           0           0           5           0           
+   ```
+4. **算子时间占比**
+   ```
+   python vc_gcn_datanet.py   --data-name=Cora --epochs=100 --num-layers=2 --num-hidden=256 --fuse --profile #添加--profile参数
+   mindinsight start
+   ##浏览器页面打开prof文件夹即可查看
+   ```
+   ![算子占比图](./images/operator_time_analysis.png)
 ---
 
 # 5. 致谢
