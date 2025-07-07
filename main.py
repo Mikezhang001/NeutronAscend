@@ -117,7 +117,7 @@ def main(train_args):
         beg = time.time()
         train_net.set_train()
         train_loss = train_net()
-        # print(f"卡时间的训练损失为{train_loss}")
+        print(f"train_loss={train_loss}")
         end = time.time()
         dur = end - beg
         if e >= warm_up:
