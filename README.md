@@ -258,126 +258,56 @@ Reference Link: [MindSpore Graph Learning](https://gitee.com/mindspore/graphlear
    python vc_gcn_datanet.py  --data-name=Cora --epochs=10 --num-layers=2 --num-hidden=256 
    ```
 
-## 4.3 Performance Comparison Experiments (Example: MindsporeGL-pynative)
-1. **Number of Layers**
-   - **Two Layers**
-   ```bash
-   python vc_gcn_datanet.py  --data-name=products --epochs=10 --num-layers=2 --num-hidden=256 
-   ```
+## 4.3 Performance Comparison Experiments (MindsporeGL-pynative VS NeutronAscend)
 
-   ```
-   dataset contains  2449029 nodes 61859140 edges
-   train_loss=12.072141
-   Epoch time:8450.45781135559 ms Train loss 12.072141 Test acc:0.34154537703149124
-   train_loss=3.5697818
-   Epoch time:1165.1198863983154 ms Train loss 3.5697818 Test acc:0.4221629386229486
-   train_loss=2.2543364
-   Epoch time:1165.4982566833496 ms Train loss 2.2543364 Test acc:0.5003282738938435
-   train_loss=1.9283148
-   Epoch time:1165.1597023010254 ms Train loss 1.9283148 Test acc:0.5108556313319245
-   train_loss=1.828576
-   Epoch time:1165.1110649108887 ms Train loss 1.828576 Test acc:0.5162101332480228
-   train_loss=1.7723752
-   Epoch time:1166.0611629486084 ms Train loss 1.7723752 Test acc:0.4731143003157123
-   train_loss=1.6992369
-   Epoch time:1163.6111736297607 ms Train loss 1.6992369 Test acc:0.4751892262902881
-   train_loss=1.6790669
-   Epoch time:1166.7473316192627 ms Train loss 1.6790669 Test acc:0.4788601101355525
-   train_loss=1.6669618
-   Epoch time:1165.6548976898193 ms Train loss 1.6669618 Test acc:0.4798912471290155
-   train_loss=1.6325996
-   Epoch time:1165.1995182037354 ms Train loss 1.6325996 Test acc:0.47932868553529884
-   Model:GCN Dataset:products Avg epoch time:1165.3635501861572
-   ```
+1. **Hidden Layer Dimensions**
+
+```
+python vc_gcn_datanet.py --data-name=Cora --epochs=10 --num-layers=2 --num-hidden=256
+python main.py --data-name=Cora --epochs=10 --num-layers=2 --num-hidden=256
+```
+
+| MindsporeGL-pynative | NeutronAscend |
+|----------------------|---------------|
+| train_loss=1.9464992<br>Epoch time:6721.97151184082 ms Train loss 1.9464992 Test acc:0.231 | train_loss=1.9460183<br>Epoch time:8017.242193222046 ms Train loss 1.9460183 Test acc:0.24 |
+| train_loss=1.9031433<br>Epoch time:20.583629608154297 ms Train loss 1.9031433 Test acc:0.31 | train_loss=1.9028889<br>Epoch time:5.220174789428711 ms Train loss 1.9028889 Test acc:0.268 |
+| train_loss=1.862346<br>Epoch time:12.070894241333008 ms Train loss 1.862346 Test acc:0.374 | train_loss=1.8609746<br>Epoch time:4.431247711181641 ms Train loss 1.8609746 Test acc:0.323 |
+| train_loss=1.8172696<br>Epoch time:12.262344360351562 ms Train loss 1.8172696 Test acc:0.471 | train_loss=1.8123358<br>Epoch time:4.806756973266602 ms Train loss 1.8123358 Test acc:0.441 |
+| train_loss=1.7612681<br>Epoch time:11.719465255737305 ms Train loss 1.7612681 Test acc:0.564 | train_loss=1.7598159<br>Epoch time:4.66609001159668 ms Train loss 1.7598159 Test acc:0.559 |
+| train_loss=1.7140642<br>Epoch time:11.707544326782227 ms Train loss 1.7140642 Test acc:0.633 | train_loss=1.6903038<br>Epoch time:4.644870758056641 ms Train loss 1.6903038 Test acc:0.662 |
+| train_loss=1.636764<br>Epoch time:11.937141418457031 ms Train loss 1.636764 Test acc:0.699 | train_loss=1.6496036<br>Epoch time:4.580974578857422 ms Train loss 1.6496036 Test acc:0.715 |
+| train_loss=1.5727236<br>Epoch time:13.03243637084961 ms Train loss 1.5727236 Test acc:0.757 | train_loss=1.5559793<br>Epoch time:4.574775695800781 ms Train loss 1.5559793 Test acc:0.774 |
+| train_loss=1.5089473<br>Epoch time:11.981725692749023 ms Train loss 1.5089473 Test acc:0.79 | train_loss=1.5101113<br>Epoch time:4.597187042236328 ms Train loss 1.5101113 Test acc:0.805 |
+| train_loss=1.4413587<br>Epoch time:11.902093887329102 ms Train loss 1.4413587 Test acc:0.798 | train_loss=1.3996819<br>Epoch time:4.586458206176758 ms Train loss 1.3996819 Test acc:0.813 |
+| Model:GCN Dataset:Cora Avg epoch time:12.077535901750837 | Model:GCN Dataset:Cora Avg epoch time:4.636730466570173 |
+
+2. **Number of Layers**
+
    - **Three Layers**
-   ```bash
-   python vc_gcn_datanet.py  --data-name=products --epochs=10 --num-layers=3 --num-hidden=256
    ```
+   python vc_gcn_datanet.py --data-name=Cora --epochs=10 --num-layers=3 --num-hidden=256
+   python main.py --data-name=Cora --epochs=10 --num-layers=3 --num-hidden=256
+   ```
+| MindsporeGL-pynative  | NeutronAscend |
+|--------------------------------------------|-------------------------------------|
+| Epoch time:6817.836046218872 ms Train loss 1.9462851 Test acc:0.315 | Epoch time:8793.636322021484 ms Train loss 1.9455684 Test acc:0.218 |
+| train_loss=1.8981811<br>Epoch time:22.810935974121094 ms Train loss 1.8981811 Test acc:0.418 | train_loss=1.8954426<br>Epoch time:7.243633270263672 ms Train loss 1.8954426 Test acc:0.446 |
+| train_loss=1.8318211<br>Epoch time:16.355276107788086 ms Train loss 1.8318211 Test acc:0.678 | train_loss=1.8298885<br>Epoch time:7.094144821166992 ms Train loss 1.8298885 Test acc:0.536 |
+| train_loss=1.7208747<br>Epoch time:15.924453735351562 ms Train loss 1.7208747 Test acc:0.787 | train_loss=1.7077127<br>Epoch time:8.560895919799805 ms Train loss 1.7077127 Test acc:0.706 |
+| train_loss=1.535662<br>Epoch time:16.00790023803711 ms Train loss 1.535662 Test acc:0.76 | train_loss=1.5458547<br>Epoch time:7.510900497436523 ms Train loss 1.5458547 Test acc:0.657 |
+| train_loss=1.3136154<br>Epoch time:15.717267990112305 ms Train loss 1.3136154 Test acc:0.768 | train_loss=1.3178718<br>Epoch time:6.683349609375 ms Train loss 1.3178718 Test acc:0.793 |
+| train_loss=1.0799528<br>Epoch time:15.77305793762207 ms Train loss 1.0799528 Test acc:0.807 | train_loss=1.0884048<br>Epoch time:6.659746170043945 ms Train loss 1.0884048 Test acc:0.805 |
+| train_loss=0.80185837<br>Epoch time:15.743494033813477 ms Train loss 0.80185837 Test acc:0.797 | train_loss=0.84241307<br>Epoch time:6.627559661865234 ms Train loss 0.84241307 Test acc:0.751 |
+| train_loss=0.61293924<br>Epoch time:15.693902969360352 ms Train loss 0.61293924 Test acc:0.783 | train_loss=0.6218153<br>Epoch time:6.43467903137207 ms Train loss 0.6218153 Test acc:0.757 |
+| train_loss=0.45780012<br>Epoch time:15.574455261230469 ms Train loss 0.45780012 Test acc:0.802 | train_loss=0.44033584<br>Epoch time:6.44373893737793 ms Train loss 0.44033584 Test acc:0.802 |
+| **Model:GCN Dataset:Cora Avg epoch time:15.7764 ms** | **Model:GCN Dataset:Cora Avg epoch time:6.9887 ms** |
 
-   ```
-   dataset contains  2449029 nodes 61859140 edges
-   train_loss=8.435297
-   Epoch time:11191.599369049072 ms Train loss 8.435297 Test acc:0.4329031205675682
-   train_loss=3.3900096
-   Epoch time:3582.9479694366455 ms Train loss 3.3900096 Test acc:0.3537925010765486
-   train_loss=4.872701
-   Epoch time:3576.2083530426025 ms Train loss 4.872701 Test acc:0.39171954519719254
-   train_loss=3.7903616
-   Epoch time:3602.1695137023926 ms Train loss 3.7903616 Test acc:0.4370005571393133
-   train_loss=3.3421147
-   Epoch time:3618.5998916625977 ms Train loss 3.3421147 Test acc:0.4656152864929639
-   train_loss=2.7813191
-   Epoch time:3587.216377258301 ms Train loss 2.7813191 Test acc:0.4309257956405769
-   train_loss=2.7379599
-   Epoch time:3605.0972938537598 ms Train loss 2.7379599 Test acc:0.4292055771768987
-   train_loss=2.6575003
-   Epoch time:3586.103677749634 ms Train loss 2.6575003 Test acc:0.41401686600325066
-   train_loss=2.4747195
-   Epoch time:3604.220390319824 ms Train loss 2.4747195 Test acc:0.39548215595291836
-   train_loss=2.2983172
-   Epoch time:3607.9840660095215 ms Train loss 2.2983172 Test acc:0.384010869864818
-   Model:GCN Dataset:products Avg epoch time:3601.6273157937185
-   ```
 
-2. **Hidden Layer Dimensions**
-   - **16**
-   ```bash
-   python vc_gcn_datanet.py  --data-name=products --epochs=10 --num-layers=2 --num-hidden=16 
-   ```
 
-   ```
-   dataset contains  2449029 nodes 61859140 edges
-   train_loss=9.642098
-   Epoch time:7039.752960205078 ms Train loss 9.642098 Test acc:0.10264557580325437
-   train_loss=7.8305697
-   Epoch time:736.5090847015381 ms Train loss 7.8305697 Test acc:0.08275665121768604
-   train_loss=6.350828
-   Epoch time:735.252857208252 ms Train loss 6.350828 Test acc:0.13386390347256394
-   train_loss=5.1508837
-   Epoch time:735.4328632354736 ms Train loss 5.1508837 Test acc:0.19797107303766542
-   train_loss=4.2162824
-   Epoch time:736.8307113647461 ms Train loss 4.2162824 Test acc:0.2548783579165972
-   train_loss=3.5348632
-   Epoch time:735.3265285491943 ms Train loss 3.5348632 Test acc:0.2999759160377951
-   train_loss=3.0366533
-   Epoch time:735.6846332550049 ms Train loss 3.0366533 Test acc:0.33167592295120263
-   train_loss=2.7179286
-   Epoch time:735.2287769317627 ms Train loss 2.7179286 Test acc:0.3529909072875901
-   train_loss=2.4348474
-   Epoch time:736.16623878479 ms Train loss 2.4348474 Test acc:0.36806891356930194
-   train_loss=2.2762816
-   Epoch time:735.344409942627 ms Train loss 2.2762816 Test acc:0.3787788211149022
-   Model:GCN Dataset:products Avg epoch time:735.7163088662284
-   ```
 
-   - **256**
-   ```bash
-   python vc_gcn_datanet.py  --data-name=products --epochs=10 --num-layers=2 --num-hidden=256 
-   ``` 
-   ```
-   dataset contains  2449029 nodes 61859140 edges
-   train_loss=12.072141
-   Epoch time:8450.45781135559 ms Train loss 12.072141 Test acc:0.34154537703149124
-   train_loss=3.5697818
-   Epoch time:1165.1198863983154 ms Train loss 3.5697818 Test acc:0.4221629386229486
-   train_loss=2.2543364
-   Epoch time:1165.4982566833496 ms Train loss 2.2543364 Test acc:0.5003282738938435
-   train_loss=1.9283148
-   Epoch time:1165.1597023010254 ms Train loss 1.9283148 Test acc:0.5108556313319245
-   train_loss=1.828576
-   Epoch time:1165.1110649108887 ms Train loss 1.828576 Test acc:0.5162101332480228
-   train_loss=1.7723752
-   Epoch time:1166.0611629486084 ms Train loss 1.7723752 Test acc:0.4731143003157123
-   train_loss=1.6992369
-   Epoch time:1163.6111736297607 ms Train loss 1.6992369 Test acc:0.4751892262902881
-   train_loss=1.6790669
-   Epoch time:1166.7473316192627 ms Train loss 1.6790669 Test acc:0.4788601101355525
-   train_loss=1.6669618
-   Epoch time:1165.6548976898193 ms Train loss 1.6669618 Test acc:0.4798912471290155
-   train_loss=1.6325996
-   Epoch time:1165.1995182037354 ms Train loss 1.6325996 Test acc:0.47932868553529884
-   Model:GCN Dataset:products Avg epoch time:1165.3635501861572
-   ```
+
+
+---
 
 3. **Memory and Power Consumption** (GPU data in `data_preprocessing/ntspowerdraw.py`)
    ```bash
