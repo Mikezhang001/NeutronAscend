@@ -269,17 +269,17 @@ python main.py --data-name=Cora --epochs=10 --num-layers=2 --num-hidden=256
 
 | MindsporeGL-pynative | NeutronAscend |
 |----------------------|---------------|
-| train_loss=1.9464992<br>Epoch time:6721.97151184082 ms Train loss 1.9464992 Test acc:0.231 | train_loss=1.9460183<br>Epoch time:8017.242193222046 ms Train loss 1.9460183 Test acc:0.24 |
-| train_loss=1.9031433<br>Epoch time:20.583629608154297 ms Train loss 1.9031433 Test acc:0.31 | train_loss=1.9028889<br>Epoch time:5.220174789428711 ms Train loss 1.9028889 Test acc:0.268 |
-| train_loss=1.862346<br>Epoch time:12.070894241333008 ms Train loss 1.862346 Test acc:0.374 | train_loss=1.8609746<br>Epoch time:4.431247711181641 ms Train loss 1.8609746 Test acc:0.323 |
-| train_loss=1.8172696<br>Epoch time:12.262344360351562 ms Train loss 1.8172696 Test acc:0.471 | train_loss=1.8123358<br>Epoch time:4.806756973266602 ms Train loss 1.8123358 Test acc:0.441 |
-| train_loss=1.7612681<br>Epoch time:11.719465255737305 ms Train loss 1.7612681 Test acc:0.564 | train_loss=1.7598159<br>Epoch time:4.66609001159668 ms Train loss 1.7598159 Test acc:0.559 |
-| train_loss=1.7140642<br>Epoch time:11.707544326782227 ms Train loss 1.7140642 Test acc:0.633 | train_loss=1.6903038<br>Epoch time:4.644870758056641 ms Train loss 1.6903038 Test acc:0.662 |
-| train_loss=1.636764<br>Epoch time:11.937141418457031 ms Train loss 1.636764 Test acc:0.699 | train_loss=1.6496036<br>Epoch time:4.580974578857422 ms Train loss 1.6496036 Test acc:0.715 |
-| train_loss=1.5727236<br>Epoch time:13.03243637084961 ms Train loss 1.5727236 Test acc:0.757 | train_loss=1.5559793<br>Epoch time:4.574775695800781 ms Train loss 1.5559793 Test acc:0.774 |
-| train_loss=1.5089473<br>Epoch time:11.981725692749023 ms Train loss 1.5089473 Test acc:0.79 | train_loss=1.5101113<br>Epoch time:4.597187042236328 ms Train loss 1.5101113 Test acc:0.805 |
-| train_loss=1.4413587<br>Epoch time:11.902093887329102 ms Train loss 1.4413587 Test acc:0.798 | train_loss=1.3996819<br>Epoch time:4.586458206176758 ms Train loss 1.3996819 Test acc:0.813 |
-| Model:GCN Dataset:Cora Avg epoch time:12.077535901750837 | Model:GCN Dataset:Cora Avg epoch time:4.636730466570173 |
+| Epoch time:6762.388706207275 ms Train loss 1.9459919 Test acc:0.276 | Epoch time:8146.044969558716 ms Train loss 1.9463493 Test acc:0.297 |
+| train_loss=1.9025142<br>Epoch time:23.68783950805664 ms Train loss 1.9025142 Test acc:0.314 | train_loss=1.9044855<br>Epoch time:4.7855377197265625 ms Train loss 1.9044855 Test acc:0.401 |
+| train_loss=1.8654575<br>Epoch time:14.271020889282227 ms Train loss 1.8654575 Test acc:0.382 | train_loss=1.8660983<br>Epoch time:4.29844856262207 ms Train loss 1.8660983 Test acc:0.406 |
+| train_loss=1.8180279<br>Epoch time:13.913631439208984 ms Train loss 1.8180279 Test acc:0.452 | train_loss=1.8178546<br>Epoch time:4.085779190063477 ms Train loss 1.8178546 Test acc:0.442 |
+| train_loss=1.7640097<br>Epoch time:13.920783996582031 ms Train loss 1.7640097 Test acc:0.559 | train_loss=1.7660494<br>Epoch time:4.086017608642578 ms Train loss 1.7660494 Test acc:0.522 |
+| train_loss=1.7172061<br>Epoch time:13.888359069824219 ms Train loss 1.7172061 Test acc:0.637 | train_loss=1.703722<br>Epoch time:4.062891006469727 ms Train loss 1.703722 Test acc:0.631 |
+| train_loss=1.6453526<br>Epoch time:13.69476318359375 ms Train loss 1.6453526 Test acc:0.731 | train_loss=1.6585788<br>Epoch time:4.066944122314453 ms Train loss 1.6585788 Test acc:0.703 |
+| train_loss=1.5801979<br>Epoch time:13.773679733276367 ms Train loss 1.5801979 Test acc:0.789 | train_loss=1.5720006<br>Epoch time:4.061698913574219 ms Train loss 1.5720006 Test acc:0.767 |
+| train_loss=1.5067801<br>Epoch time:13.751745223999023 ms Train loss 1.5067801 Test acc:0.797 | train_loss=1.5117003<br>Epoch time:4.238367080688477 ms Train loss 1.5117003 Test acc:0.786 |
+| train_loss=1.4378883<br>Epoch time:13.725042343139648 ms Train loss 1.4378883 Test acc:0.803 | train_loss=1.4193555<br>Epoch time:4.065752029418945 ms Train loss 1.4193555 Test acc:0.793 |
+| **Model:GCN Dataset:Cora Avg epoch time:13.8097 ms** | **Model:GCN Dataset:Cora Avg epoch time:4.0953 ms** |
 
 2. **Number of Layers**
 
