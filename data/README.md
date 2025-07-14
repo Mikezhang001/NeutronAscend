@@ -39,8 +39,8 @@ This file is the standard format of the Cora graph dataset, containing graph str
 | Cora         | See data_preprocessing/download_data.py |
 | Citeseer     | See data_preprocessing/download_data.py |
 | Pubmed       | See data_preprocessing/download_data.py |
-| reddit       | [Download Link]() |
-| products     | [Download Link]() |
+| reddit       | [Download Link](https://data.dgl.ai/dataset/reddit.zip) |
+| products     | [Download Link](https://ogb.stanford.edu/docs/nodeprop/#ogbn-products) |
 | mycielskian18| [Download Link](https://suitesparse-collection-website.herokuapp.com/MM/Mycielski/mycielskian18.tar.gz)<br>Processing script: data_preprocessing/read_mycielskian.py |
 
 ---
