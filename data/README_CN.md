@@ -39,8 +39,8 @@
 | Cora        | 见 data_preprocessing/download_data.py |
 | Citeseer    | 见 data_preprocessing/download_data.py |
 | Pubmed      | 见 data_preprocessing/download_data.py |
-| reddit      | [下载链接]() |
-| products    | [下载链接]() |
+| reddit      | [下载链接](https://data.dgl.ai/dataset/reddit.zip) |
+| products    | [下载链接](https://ogb.stanford.edu/docs/nodeprop/#ogbn-products) |
 | mycielskian18 | [下载链接](https://suitesparse-collection-website.herokuapp.com/MM/Mycielski/mycielskian18.tar.gz)<br>处理脚本: data_preprocessing/read_mycielskian.py |
 
 ---
