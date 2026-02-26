@@ -76,11 +76,11 @@ class DataNet(ms.nn.Cell):
 def main(train_args):
     
     context.set_context(device_target=train_args.device, save_graphs=False,
-                            save_graphs_path="./computational_graph/",
-                            mode=context.GRAPH_MODE, enable_graph_kernel=True,
-                            graph_kernel_flags="--enable_recompute_fusion=false "
-                                               "--enable_parallel_fusion=true ",
-                                               device_id=train_args.device_id)
+                        save_graphs_path="./computational_graph/",
+                        mode=context.GRAPH_MODE, enable_graph_kernel=True,
+                        graph_kernel_flags="--enable_recompute_fusion=false "
+                                           "--enable_parallel_fusion=true ",
+                        device_id=train_args.device_id)
 
 
     # Timing dataset loading
@@ -89,7 +89,6 @@ def main(train_args):
     print(f"Dataset loading time: {time.time() - start_time:.4f} seconds")
 
     feature_size = ds.x.shape[1]
-    print(f"值为{train_args.profile}")
     if train_args.profile:
         ms_profiler = Profiler(profiler_level=0, aicore_metrics=1, l2_cache=True, hbm_ddr=True, pcie=True, output_path="./prof_result")
     # model

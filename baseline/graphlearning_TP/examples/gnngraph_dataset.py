@@ -63,10 +63,7 @@ class GraphDataset:
         
         ##原本的操作
         npz = np.load(f"{dataset_path}/npz/{dataset_name}.npz")
-        # self.x = ms.Tensor(npz['feat'], ms.float32) 
         self.x = ms.Tensor(npz['feat']) 
-        print(f"x的shape为{self.x.shape}")
-        print(f"x的类型为{self.x.dtype}")
         self.y = ms.Tensor(npz['label'], ms.int32)
         
         self.train_mask = npz.get('train_mask', default=None)
@@ -110,7 +107,6 @@ class GraphDataset:
         #采用过滤边和矩阵乘法结合的方法
         window_H = {"Cora":8192, "Pubmed":81920, "Citeseer": 81920, "products": 6400, "mycielskian18": 8192, "reddit": 8192}
         self.BLK_H = window_H[dataset_name]
-        print(f"窗口高为{self.BLK_H}")
         self.batch_edgecount = 10000000
         row_reindex_np = np.fromfile(  f"{dataset_path}/mmad/{dataset_name}/row_reindex.bin", dtype=np.int32)
         self.row_reindex = row_reindex_np.tolist()#特征重排序
@@ -128,9 +124,7 @@ class GraphDataset:
         edgeToRow_np = np.load(f"{dataset_path}/mmad/{dataset_name}/edgeToRow_np.npz", allow_pickle=True)
         self.adj_matrix = []
         self.edgeToRow_ms_tensor = []
-        print("邻接矩阵读取开始")
         for key in adj_matrix_np.keys():
             self.adj_matrix.append(Tensor(adj_matrix_np[key], dtype=ms.float16))
-        print("邻接矩阵读取结束")
         for key in edgeToRow_np.keys():
             self.edgeToRow_ms_tensor.append(Tensor(edgeToRow_np[key], dtype=ms.int32))

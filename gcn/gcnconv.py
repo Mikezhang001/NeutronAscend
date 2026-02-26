@@ -322,5 +322,6 @@ class GCNConv(GNNCell):
         # x = x * in_deg  # Directly operate on matrix features x
         x = [v.x for v in g.dst_vertex] * in_deg
         x = x + self.bias
-
+        if self.activation is not None:
+            x = self.activation(x)
         return x

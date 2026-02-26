@@ -386,21 +386,14 @@ class GCNConv(GNNCell):
         
         x = new_node_feat
         g.set_vertex_attr({"x": x})
-        
-        
-        
-        
-        
-        
-        
-        #原来后续处理部分
+
         in_deg = ms.ops.clip_by_value(in_deg, self.min_clip, self.max_clip)
         in_deg = ms.ops.Reshape()(ms.ops.Pow()(in_deg, -0.5), ms.ops.Shape()(in_deg) + (1,))
-        # x = x * in_deg  # 直接用矩阵特征 x 进行操作
         x = [v.x for v in g.dst_vertex] * in_deg
         x = x + self.bias
-        # 图操作计时结束
-        
+        if self.activation is not None:
+            x = self.activation(x)
+
         total_end_time = time.time()
         
         #  # 计算时间占比

@@ -164,5 +164,6 @@ class GCNConv(GNNCell):
         in_deg = ms.ops.Reshape()(ms.ops.Pow()(in_deg, -0.5), ms.ops.Shape()(in_deg) + (1,))
         x = [v.x for v in g.dst_vertex] * in_deg
         x = x + self.bias
-        # print("hello world GCNConv!")
+        if self.activation is not None:
+            x = self.activation(x)
         return x
