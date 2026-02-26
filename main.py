@@ -76,11 +76,11 @@ class DataNet(ms.nn.Cell):
 def main(train_args):
   
     context.set_context(device_target=train_args.device, save_graphs=False,
-                            save_graphs_path="./computational_graph/",
-                            mode=context.GRAPH_MODE, enable_graph_kernel=True,
-                            graph_kernel_flags="--enable_recompute_fusion=false "
-                                               "--enable_parallel_fusion=true ",
-                                               device_id=train_args.device_id)
+                        save_graphs_path="./computational_graph/",
+                        mode=context.GRAPH_MODE, enable_graph_kernel=True,
+                        graph_kernel_flags="--enable_recompute_fusion=false "
+                                           "--enable_parallel_fusion=true ",
+                        device_id=train_args.device_id)
     
     
     
